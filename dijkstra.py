@@ -6,59 +6,49 @@ import psutil
 import os
 import tracemalloc
 
-
-# Function to get current memory usage
-def get_memory_usage():
-    process = psutil.Process(os.getpid())
-    return process.memory_info().rss  # Return memory usage in KB
-
-# Dijkstra's Algorithm Implementation
+# main dijkstra algorithm
 def dijkstra(graph, start, end):
-    # Measure memory usage before running Dijkstra
-    memory_before = get_memory_usage()
-
+    # distances for all vertices is infinity in beginning except for the start node itself, which has distance of 0
     distances = {node: float('infinity') for node in graph}
     distances[start] = 0
-    priority_queue = [(0, start)]
+    # priority queue to keep track of vertices to visit (initially start node is added)
+    priority_queue = [(0, start)] # left = distance, right = vertex
+    # for all vertices, previous node is set to None
     previous_nodes = {node: None for node in graph}
 
-    while priority_queue:
+    while priority_queue: # as long as priority queue is filled with at least one vertex
         current_distance, current_node = heapq.heappop(priority_queue)
-
+        # if end is reached
         if current_node == end:
             break
-
+        
+        # nothing to do if current distance is greater than previous distance
         if current_distance > distances[current_node]:
             continue
 
+        
         for neighbor, weight in graph[current_node]:
             # print(neighbor, weight)
             distance = current_distance + weight
+            # if smaller distance is found
             if distance < distances[neighbor]:
                 distances[neighbor] = distance
+                # set the previous node for this neighbor as current node
                 previous_nodes[neighbor] = current_node
+                # add neighbor to priority queue
                 heapq.heappush(priority_queue, (distance, neighbor))
 
-    # Reconstruct the path
+    # go back from the last vertex to previous vertex and then to its previous vertex, and so on to create path
     path = []
     current = end
     while current is not None:
         path.append(current)
         current = previous_nodes[current]
     path.reverse()
-
-    
-    # Measure memory usage after running Dijkstra
-    memory_after = get_memory_usage()
-    print(f"Memory Usage: Before: {memory_before:.10f} KB, After: {memory_after:.10f} KB")
-
+    # return shortest distance from start to end, and the path which is an array of vertices
     return distances[end], path
 
-
-
-
-
-# Graph with 10 vertices
+# initializing a graph
 graph = {
     'A': [('B', 2), ('C', 4)],
     'B': [('A', 2), ('D', 7), ('E', 3)],
@@ -69,49 +59,41 @@ graph = {
     'G': [('D', 3), ('J', 4)],
     'H': [('E', 2), ('I', 5)],
     'I': [('F', 8), ('H', 5), ('J', 1)],
-    'J': [('G', 4), ('I', 1)]
+    'J': [('G', 4), ('I', 1)],
 }
 
-
-
-
-# Measure runtime
+# measuring execution time
 start_time = time.time()
-# tracemalloc.start()
 distance, path = dijkstra(graph, 'A', 'J')
-# print(tracemalloc.get_traced_memory())
-# tracemalloc.stop()
 end_time = time.time()
 
-
-
-run_time = end_time - start_time
-run_time = run_time * 1000
+exec_time = end_time - start_time
+exec_time = exec_time * 1000 # converting to milliseconds
 
 # Output
 print(f"Shortest distance: {distance}")
 print(f"Path: {' -> '.join(path)}")
-print(f"Runtime: {run_time: .6f} ms")
+print(f"Execution Time: {exec_time: .10f} ms")
 
-
-# Visualization
+# for visualization
 G = nx.Graph()
 for node, edges in graph.items():
     for neighbor, weight in edges:
+        # adding each edge to graph
         G.add_edge(node, neighbor, weight=weight)
 
-# Node positions and visualization
+# drawing vertices
 pos = nx.spring_layout(G)
 nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=700, font_size=10)
 
-# Highlight the shortest path in red
+# highlighting the shortest path in red
 path_edges = list(zip(path, path[1:]))
 nx.draw_networkx_edges(G, pos, edgelist=path_edges, edge_color="red", width=2)
 
-# Add edge weights as labels
+# adding edge weights as labels
 labels = nx.get_edge_attributes(G, 'weight')
 nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
 
-# Show the plot
+# showing the graph
 plt.title("Dijkstra's Algorithm Visualization")
 plt.show()
