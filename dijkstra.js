@@ -90,11 +90,22 @@ const graph = {
   J: { G: 4, I: 1 },
 };
 
-// calculating execution time
-const startTime = performance.now();
-const result = dijkstra(graph, "A", "J");
-const endTime = performance.now();
-const exec_time = endTime - startTime;
+console.log(""); // to give a line gap
+// calculating execution time and peak memory usage
+const start = performance.now();
+const startMemory = process.memoryUsage().heapUsed; // initial memory usage
+const { distance, path } = dijkstra(graph, "A", "J");
+const endMemory = process.memoryUsage().heapUsed; // final memory usage
+const end = performance.now();
+const exec_time = end - start;
 
-console.log(`Runtime: ${exec_time} ms`);
-console.log(`Path: ${result.path.join(" -> ")}`);
+console.log("[NODE.JS]");
+
+console.log("\nOutput:");
+console.log(`Shortest distance from start to end: ${distance}`);
+console.log(`Path: ${path}`);
+
+console.log("\nAnalytics:");
+console.log("Execution time: " + exec_time.toFixed(10) + " ms");
+const peakMemory = (endMemory - startMemory) / 1024; // in KB
+console.log(`Peak memory usage: ${peakMemory.toFixed(4)} KB\n`);

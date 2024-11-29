@@ -2,7 +2,6 @@ import heapq
 import networkx as nx
 import matplotlib.pyplot as plt
 import time
-import psutil
 import os
 import tracemalloc
 
@@ -62,18 +61,22 @@ graph = {
     'J': [('G', 4), ('I', 1)],
 }
 
-# measuring execution time
-start_time = time.time()
+# finding execution time and peak memory usage
+tracemalloc.start()
+start_time = time.perf_counter()
 distance, path = dijkstra(graph, 'A', 'J')
-end_time = time.time()
-
-exec_time = end_time - start_time
-exec_time = exec_time * 1000 # converting to milliseconds
+peak_memory = tracemalloc.get_traced_memory()[1]
+end_time = time.perf_counter()
+tracemalloc.stop()
 
 # Output
-print(f"Shortest distance: {distance}")
+print("\n[PYTHON]")
+print("\nOutput:")
+print(f"Shortest distance from start to end: {distance}")
 print(f"Path: {' -> '.join(path)}")
-print(f"Execution Time: {exec_time: .10f} ms")
+print("\nAnalytics:")
+print(f"Peak memory usage: {peak_memory / 1024:.4f} KB")
+print(f"Execution time: {(end_time - start_time) * 1000:.10f} milliseconds\n")
 
 # for visualization
 G = nx.Graph()
