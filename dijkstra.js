@@ -33,16 +33,12 @@ function dijkstra(graph, start, end) {
 
   // distances for all vertices is infinity in beginning except for the start node itself, which has distance of 0
   for (let vertex in graph) {
-    if (vertex === start) {
-      distances[vertex] = 0;
-      pq.enqueue(vertex, 0);
-    } else {
-      distances[vertex] = Infinity;
-      pq.enqueue(vertex, Infinity);
-    }
-    // for all vertices, previous node is set to None
+    distances[vertex] = Infinity;
     previous[vertex] = null;
   }
+
+  distances[start] = 0;
+  pq.enqueue(start, 0);
 
   // as long as priority queue is filled with at least one vertex
   while (!pq.isEmpty()) {
@@ -52,14 +48,14 @@ function dijkstra(graph, start, end) {
     if (currentNode === end) break;
 
     for (let neighbor in graph[currentNode]) {
-      let alt = distances[currentNode] + graph[currentNode][neighbor];
+      let dist = distances[currentNode] + graph[currentNode][neighbor];
       // if smaller distance is found
-      if (alt < distances[neighbor]) {
-        distances[neighbor] = alt;
+      if (dist < distances[neighbor]) {
+        distances[neighbor] = dist;
         // set the previous node for this neighbor as current node
         previous[neighbor] = currentNode;
-        // add neighbor to priority queue
-        pq.enqueue(neighbor, alt);
+        // add neighbor to priority queue only if distance is updated
+        pq.enqueue(neighbor, dist);
       }
     }
   }
@@ -208,6 +204,7 @@ function test_case(test_case_name, graph, start, end) {
   console.log("Execution time: " + exec_time.toFixed(10) + " ms");
   const usageMemory = (endMemory - startMemory) / 1024; // in KB
   console.log(`memory usage: ${usageMemory.toFixed(4)} KB\n`);
+  console.log("------------------------------------");
 }
 
 test_case("10 Vertices", graph10, "A", "J");

@@ -33,7 +33,7 @@ def dijkstra(graph, start, end):
                 distances[neighbor] = distance
                 # set the previous node for this neighbor as current node
                 previous_nodes[neighbor] = current_node
-                # add neighbor to priority queue
+                # add neighbor to priority queue only if distance is updated
                 heapq.heappush(priority_queue, (distance, neighbor))
 
     # go back from the last vertex to previous vertex and then to its previous vertex, and so on to create path
@@ -175,6 +175,7 @@ def test_case(test_case_name, graph, start, end):
     print("\nAnalytics:")
     print(f"Peak memory usage: {peak_memory / 1024:.4f} KB")
     print(f"Execution time: {(end_time - start_time) * 1000:.10f} milliseconds\n")
+    print("------------------------------------")
 
     # for visualization
     G = nx.Graph()
