@@ -2,7 +2,6 @@ import heapq
 import networkx as nx
 import matplotlib.pyplot as plt
 import time
-import os
 import tracemalloc
 
 # main dijkstra algorithm
@@ -158,8 +157,6 @@ graph50 = {
     'BN': [('BJ', 6), ('BO', 5)],
     'BO': [('BK', 4), ('BN', 5)]
 }
-
-
 
 def test_case(test_case_name, graph, start, end):
     # finding execution time and peak memory usage
